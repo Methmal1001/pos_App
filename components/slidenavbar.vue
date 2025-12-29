@@ -5,10 +5,10 @@
   >
     <!-- Logo / Title Area -->
     <div class="py-6 px-4 flex items-center justify-between border-b border-gray-200">
-      <h2 v-show="sidebarOpen" class="text-xl font-bold text-orange-500">POS</h2>
+      <!-- <h2 v-show="sidebarOpen" class="text-xl font-bold text-orange-500">POS</h2> -->
       <button
         @click="$emit('toggle')"
-        class="p-2 rounded hover:bg-gray-200 text-gray-600"
+        class="p-2 rounded hover:bg-gray-200 text-gray-600 ml-auto mr-auto"
       >
         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" :d="sidebarOpen ? 'M11 19l-7-7 7-7m8 14l-7-7 7-7' : 'M13 5l7 7-7 7M5 5l7 7-7 7'" />
