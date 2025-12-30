@@ -1,7 +1,7 @@
 <template>
   <div class="flex min-h-screen bg-gray-50">
     <!-- Collapsible Sidebar -->
-    <Slidenavbar :sidebar-open="sidebarOpen" @toggle="sidebarOpen = !sidebarOpen" />
+    <Sidenavbar :sidebar-open="sidebarOpen" @toggle="sidebarOpen = !sidebarOpen" />
 
     <!-- Main Content -->
     <div class="flex-1 flex flex-col">
@@ -78,101 +78,134 @@
 
         <!-- Order Panel (Smaller cards, auto-calculates subtotal & tax) -->
         <div class="w-full lg:w-96 bg-white shadow-xl flex flex-col border-t lg:border-t-0 lg:border-l">
-          <!-- Mobile Header -->
-          <div class="lg:hidden p-4 border-b bg-gradient-to-r from-orange-50 to-orange-100 flex justify-between items-center">
-            <h2 class="text-lg font-bold text-gray-800">Current Order</h2>
-            <button class="bg-orange-500 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-orange-600">
-              + Add Customer
-            </button>
-          </div>
 
-          <!-- Desktop Header -->
-          <div class="hidden lg:flex p-4 border-b bg-gradient-to-r from-orange-50 to-orange-100 justify-between items-center">
-            <h2 class="text-xl font-bold text-gray-800">Order</h2>
-            <button class="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600">
-              + Add Customer
-            </button>
-          </div>
+        <!-- Mobile Header -->
+        <div class="lg:hidden p-4 border-b bg-gradient-to-r from-orange-50 to-orange-100 flex justify-between items-center">
+          <h2 class="text-lg font-bold text-gray-800">Current Order</h2>
 
-          <!-- Order Items List (Smaller compact cards) -->
-          <div class="flex-1 overflow-y-auto p-4 space-y-3">
-            <div
-              v-for="(item, index) in orderItems"
-              :key="item.id"
-              :class="index === selectedItemIndex ? 'ring-2 ring-orange-500 bg-orange-50' : 'bg-gray-50'"
-              class="rounded-lg p-3 border border-gray-200 transition-all text-sm"
+          <!-- Hold Orders Notification Icon -->
+          <div 
+          class="relative cursor-pointer" 
+          @click="showHoldOrders = true" 
+          >
+            <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 00-12 0v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+            </svg>
+            <span 
+              v-if="holdOrdersCount > 0" 
+              class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full text-xs w-5 h-5 flex items-center justify-center"
             >
-              <div class="flex justify-between items-start mb-2">
-                <div class="flex-1">
-                  <p class="font-semibold text-gray-800">
-                    {{ item.qty }} × {{ item.name }}
-                  </p>
-                  <p class="text-xs text-gray-500 mt-1">Standard portion</p>
-                </div>
-                <div class="text-right">
-                  <p class="font-bold text-orange-600">
-                    ${{ (item.price * item.qty).toFixed(2) }}
-                  </p>
-                  <button @click.stop="removeItem(item)" class="text-red-500 hover:text-red-700 text-lg">✕</button>
-                </div>
-              </div>
+              {{ holdOrdersCount }}
+            </span>
+          </div>
 
-              <div class="flex gap-2">
-                <input
-                  type="number"
-                  :value="item.qty"
-                  min="1"
-                  class="w-16 border border-gray-300 rounded px-2 py-1 text-xs focus:ring-orange-500"
-                />
-                <input
-                  type="text"
-                  placeholder="Discount (%)"
-                  class="flex-1 border border-gray-300 rounded px-2 py-1 text-xs"
-                />
+          <button class="bg-orange-500 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-orange-600">
+            + Add Customer
+          </button>
+        </div>
+
+        <!-- Desktop Header -->
+        <div class="hidden lg:flex p-4 border-b bg-gradient-to-r from-orange-50 to-orange-100 justify-between items-center">
+          <h2 class="text-xl font-bold text-gray-800">Order</h2>
+
+        <!-- Hold Orders Notification Icon -->
+        <div 
+          class="relative cursor-pointer" 
+          @click="showHoldOrders = true" 
+        >
+          <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 00-12 0v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+          </svg>
+          <span 
+            v-if="holdOrdersCount > 0" 
+            class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full text-xs w-5 h-5 flex items-center justify-center"
+          >
+            {{ holdOrdersCount }}
+          </span>
+        </div>
+
+          <button class="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600">
+            + Add Customer
+          </button>
+        </div>
+
+        <!-- Order Items List -->
+        <div class="flex-1 overflow-y-auto p-4 space-y-3">
+          <div
+            v-for="(item, index) in orderItems"
+            :key="item.id"
+            :class="index === selectedItemIndex ? 'ring-2 ring-orange-500 bg-orange-50' : 'bg-gray-50'"
+            class="rounded-lg p-3 border border-gray-200 transition-all text-sm"
+          >
+            <div class="flex justify-between items-start mb-2">
+              <div class="flex-1">
+                <p class="font-semibold text-gray-800">
+                  {{ item.qty }} × {{ item.name }}
+                </p>
+                <p class="text-xs text-gray-500 mt-1">Standard portion</p>
+              </div>
+              <div class="text-right">
+                <p class="font-bold text-orange-600">
+                  ${{ (item.price * item.qty).toFixed(2) }}
+                </p>
+                <button @click.stop="removeItem(item)" class="text-red-500 hover:text-red-700 text-lg">✕</button>
               </div>
             </div>
 
-            <!-- Empty Order -->
-            <div v-if="orderItems.length === 0" class="text-center py-12 text-gray-400">
-              <div class="bg-gray-200 border-2 border-dashed rounded-xl w-20 h-20 mx-auto mb-4"></div>
-              <p class="text-base font-medium">Your order is empty</p>
-              <p class="text-sm mt-1">Tap ADD on any item</p>
+            <div class="flex gap-2">
+              <input
+                type="number"
+                v-model.number="item.qty"
+                min="1"
+                class="w-16 border border-gray-300 rounded px-2 py-1 text-xs focus:ring-orange-500"
+              />
+              <input
+                type="text"
+                placeholder="Discount (%)"
+                class="flex-1 border border-gray-300 rounded px-2 py-1 text-xs"
+              />
             </div>
           </div>
 
-          <!-- Action Buttons -->
-          <div class="p-4 border-t grid grid-cols-2 gap-2 text-sm">
-            <button class="py-2 border border-orange-500 text-orange-600 rounded-lg hover:bg-orange-50">Add Note</button>
-            <button class="py-2 border border-orange-500 text-orange-600 rounded-lg hover:bg-orange-50">Discount</button>
-            <button class="py-2 border border-orange-500 text-orange-600 rounded-lg hover:bg-orange-50">Coupon</button>
-            <button class="py-2 border border-orange-500 text-orange-600 rounded-lg hover:bg-orange-50">More</button>
+          <!-- Empty Order -->
+          <div v-if="orderItems.length === 0" class="text-center py-12 text-gray-400">
+            <div class="bg-gray-200 border-2 border-dashed rounded-xl w-20 h-20 mx-auto mb-4"></div>
+            <p class="text-base font-medium">Your order is empty</p>
+            <p class="text-sm mt-1">Tap ADD on any item</p>
           </div>
+        </div>
 
-          <!-- Summary (auto-calculated) -->
-          <div class="p-4 border-t bg-gradient-to-b from-gray-50 to-white space-y-2">
-            <div class="flex justify-between text-sm">
-              <span class="text-gray-600">Subtotal</span>
-              <span class="font-semibold">${{ subtotal.toFixed(2) }}</span>
-            </div>
-            <div class="flex justify-between text-sm">
-              <span class="text-gray-600">Tax (15%)</span>
-              <span class="font-semibold">${{ tax.toFixed(2) }}</span>
-            </div>
-            <div class="flex justify-between text-lg font-bold pt-3 border-t border-gray-300">
-              <span>Payable Amount</span>
-              <span class="text-orange-600">${{ payableAmount.toFixed(2) }}</span>
-            </div>
+        <!-- Action Buttons -->
+        <div class="p-4 border-t bg-gradient-to-b from-gray-50 to-white space-y-2">
+          <div class="flex gap-3 pt-3">
+            <button 
+              @click="holdOrders"
+              class="flex-1 bg-orange-500 text-white py-3 rounded-lg hover:bg-orange-600 font-bold"
+            >
+              Hold Order
+            </button>
+            <!-- Render Hold Orders Component -->
+            <holdOrders
+              v-if="showHoldOrders"
+              :hold-orders-list="holdOrdersList"
+              @close="showHoldOrders = false"
+              @use-and-delete-order="useAndDeleteHoldOrder"
+              @delete-order="deleteHoldOrder"
+            />
 
-            <div class="flex gap-3 pt-3">
-              <button class="flex-1 bg-orange-500 text-white py-3 rounded-lg hover:bg-orange-600 font-bold">
-                Hold Order
-              </button>
-              <button 
+            <button 
               @click="proceedPayment"
-              class="flex-1 bg-green-600 text-white py-3 rounded-lg hover:bg-green-700 font-bold">
-                Proceed
-              </button>
-            </div>
+              class="flex-1 bg-green-600 text-white py-3 rounded-lg hover:bg-green-700 font-bold"
+            >
+              Proceed
+            </button>
+          </div>
+            <!-- Render payments Component -->
+            <payments 
+              v-if="showPayments" 
+              :order-items="orderItems" 
+              @close="closePayments"
+            />
           </div>
         </div>
       </div>
@@ -188,16 +221,20 @@
 
 <script>
 import { ref, computed } from 'vue'
-import Slidenavbar from '~/components/slidenavbar.vue'
+import Sidenavbar from '~/components/sidenavbar.vue'
 import Header from '~/components/header.vue'
 import payments from '~/components/payments/index.vue'
 // import { mapState, mapActions, mapMutations } from 'vuex'
+import holdOrders from '~/components/hold_orders/index.vue'
+
+import { useRouter } from 'vue-router'
 
 export default {
   components: {
-    Slidenavbar,
+    Sidenavbar,
     Header,
     payments,
+    holdOrders,
   },
 
   data() {
@@ -221,9 +258,24 @@ export default {
         { id: 11, name: 'Tiramisu', price: 16.00, category: 'Deserts', image: 'https://www.bunsenburnerbakery.com/wp-content/uploads/2016/06/easy-tiramisu-square-29-720x540.jpg' },
         { id: 12, name: 'Iced Latte', price: 10.00, category: 'Beverages', image: 'https://www.coca-cola.com/content/dam/onexp/us/en/brands/simply/products/simply-hpg-product-category-img-orange.jpg' },
       ],
-      orderItems: []
+      showPayments: false,
+
+      orderItems: [],
+      holdOrdersList: [],      // store held orders
+      holdOrdersCount: 0,      // notification badge
+      showHoldOrders: false,
     }
   },
+
+  // watch: {
+  //   showPayments(newVal) {
+  //     if (newVal) {
+  //       document.body.style.overflow = 'hidden' // disable scroll
+  //     } else {
+  //       document.body.style.overflow = 'auto'   // enable scroll
+  //     }
+  //   }
+  // },
 
   computed: {
     // ...mapState({
@@ -265,7 +317,55 @@ export default {
     },
 
     proceedPayment() {
-      alert('Proceeding to payment gateway...')
+      this.showPayments = true
+      document.body.style.overflow = 'hidden'
+    },
+    closePayments() {
+      this.showPayments = false
+      document.body.style.overflow = 'auto'
+    },
+
+    holdOrders() {
+      if (this.orderItems.length === 0) return;
+
+      // Add current order to holdOrdersList
+      this.holdOrdersList.push([...this.orderItems]);
+
+      // Update badge count
+      this.holdOrdersCount = this.holdOrdersList.length;
+
+      // Optionally clear current order
+      this.orderItems = [];
+
+      // Show the hold orders modal
+      this.showHoldOrders = true;
+    },
+
+    closeHoldOrders() {
+      this.showHoldOrders = false;
+    },
+
+    useAndDeleteHoldOrder(index) {
+      // Load into current order
+      this.orderItems = [...this.holdOrdersList[index]]
+      
+      // Remove from hold orders list
+      this.holdOrdersList.splice(index, 1)
+      this.holdOrdersCount = this.holdOrdersList.length
+      
+      // Close modal
+      this.showHoldOrders = false
+    },
+    deleteHoldOrder(index) {
+      this.holdOrdersList.splice(index, 1)
+      this.holdOrdersCount = this.holdOrdersList.length
+    },
+    holdOrders() {
+      if (this.orderItems.length > 0) {
+        this.holdOrdersList.push([...this.orderItems])
+        this.holdOrdersCount = this.holdOrdersList.length
+        this.orderItems = []  // optionally clear current order
+      }
     },
   }
 }
