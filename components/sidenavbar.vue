@@ -35,16 +35,24 @@
 
     <!-- Menu Items -->
     <ul class="flex-1 py-8 space-y-4 px-4">
-      <li v-for="item in menuItems" :key="item.name" class="cursor-pointer group">
-        <div
-          :class="item.name === 'Home' ? 'bg-orange-500 text-white' : 'hover:bg-gray-200 text-gray-600 group-hover:text-gray-800'"
-          class="p-3 rounded-lg transition flex items-center space-x-3"
-        >
-          <span class="text-2xl">{{ item.icon }}</span>
-          <span v-show="sidebarOpen" class="text-sm font-medium">{{ item.name }}</span>
-        </div>
-      </li>
-    </ul>
+    <li v-for="item in menuItems" :key="item.name" class="group">
+      <nuxt-link
+        :to="item.path"
+        class="p-3 rounded-lg transition flex items-center space-x-3"
+        :class="[
+          $route.path === item.path
+            ? 'bg-orange-500 text-white'
+            : 'text-gray-600 hover:bg-gray-200 group-hover:text-gray-800'
+        ]"
+      >
+        <span class="text-2xl">{{ item.icon }}</span>
+        <span v-show="sidebarOpen" class="text-sm font-medium">
+          {{ item.name }}
+        </span>
+      </nuxt-link>
+    </li>
+  </ul>
+
   </div>
 </template>
 
@@ -60,13 +68,13 @@ export default {
   data() {
     return {
       menuItems: [
-        { name: 'Home', icon: '🏠' },
-        { name: 'Customers', icon: '👥' },
-        { name: 'Tables', icon: '🪑' },
-        { name: 'Orders', icon: '🧾' },
-        { name: 'Cashier', icon: '💵' },
-        { name: 'Reports', icon: '📊' },
-        { name: 'Settings', icon: '⚙️' }
+        { name: 'Home', icon: '🏠', path: '/' },
+        { name: 'Customers', icon: '👥', path: '/customers' },
+        { name: 'Tables', icon: '🪑', path: '/tables' },
+        { name: 'Orders', icon: '🧾', path: '/orders' },
+        { name: 'Cashier', icon: '💵',  path: '/cashier' },
+        { name: 'Reports', icon: '📊', path: '/reports' },
+        { name: 'Settings', icon: '⚙️', path: '/settings' }
       ]
     }
   }
