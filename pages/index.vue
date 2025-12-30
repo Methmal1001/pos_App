@@ -167,7 +167,9 @@
               <button class="flex-1 bg-orange-500 text-white py-3 rounded-lg hover:bg-orange-600 font-bold">
                 Hold Order
               </button>
-              <button class="flex-1 bg-green-600 text-white py-3 rounded-lg hover:bg-green-700 font-bold">
+              <button 
+              @click="proceedPayment"
+              class="flex-1 bg-green-600 text-white py-3 rounded-lg hover:bg-green-700 font-bold">
                 Proceed
               </button>
             </div>
@@ -184,58 +186,89 @@
   </div>
 </template>
 
-<script setup>
+<script>
 import { ref, computed } from 'vue'
 import Slidenavbar from '~/components/slidenavbar.vue'
 import Header from '~/components/header.vue'
+import payments from '~/components/payments/index.vue'
+// import { mapState, mapActions, mapMutations } from 'vuex'
 
-const sidebarOpen = ref(true)
-const activeTab = ref('Lunch')
-const selectedItemIndex = ref(-1)
-const popupImage = ref(null) // For fullscreen popup
+export default {
+  components: {
+    Slidenavbar,
+    Header,
+    payments,
+  },
 
-const tabs = ['Starters', 'Breakfast', 'Lunch', 'Supper', 'Deserts', 'Beverages']
+  data() {
+    return {
+      sidebarOpen: true,
+      activeTab: 'Lunch',
+      selectedItemIndex: -1,
+      popupImage: null,
+      tabs: ['Starters', 'Breakfast', 'Lunch', 'Supper', 'Deserts', 'Beverages'],
+      products: [
+        { id: 1, name: 'Schezwan Egg Noodles', price: 24.00, category: 'Lunch', image: 'https://www.cookwithmanali.com/wp-content/uploads/2021/08/Schezwan-Noodles-500x375.jpg' },
+        { id: 2, name: 'Stir Egg Fry Udon Noodles', price: 24.00, category: 'Lunch', image: 'https://eggs.ca/wp-content/uploads/2024/06/Kimchi-Udon-Stir-Fry-with-Fried-Eggs2-CMS.jpg' },
+        { id: 3, name: 'Thai Style Fried Noodles', price: 26.00, category: 'Lunch', image: 'https://d1w7312wesee68.cloudfront.net/1usnAkC5ZbalV8sAU577gWVhdYtiH05B3pkMf_9uI34/resize:fit:720:720/plain/s3://toasttab/restaurants/restaurant-253052000000000000/menu/images/item-8af8458e-fb30-4914-bde9-3cd7f2de4edd.jpg' },
+        { id: 4, name: 'Chinese Prawn Spaghetti', price: 32.00, category: 'Supper', image: 'https://images.notquitenigella.com/images/kung-pao-prawn-spaghetti/ll.jpg' },
+        { id: 5, name: 'Pancakes with Maple Syrup', price: 18.00, category: 'Breakfast', image: 'https://www.giallozafferano.com/images/260-26079/Pancakes-with-maple-syrup_1200x800.jpg' },
+        { id: 6, name: 'Avocado Toast', price: 15.00, category: 'Breakfast', image: 'https://popmenucloud.com/cdn-cgi/image/width%3D1200%2Cheight%3D1200%2Cfit%3Dscale-down%2Cformat%3Dauto%2Cquality%3D60/qegjhdml/266b99bc-c80b-4e55-8eeb-a1891793a5f0.jpg' },
+        { id: 7, name: 'Spring Rolls', price: 12.00, category: 'Starters', image: 'https://www.thespruceeats.com/thmb/LAD6HCmf0MFSpV3JDJgM9n7REos=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/SES-thai-fresh-rolls-with-vegetarian-option-3217706-hero-A-3bdb04a8ee2444a2ab6873810a334642.jpg' },
+        { id: 8, name: 'Chocolate Lava Cake', price: 14.00, category: 'Deserts', image: 'https://www.allrecipes.com/thmb/J0D_WQYOGJs3PpuDqqconBr0efI=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/7272577-67dd531d7b4a48dbb254dcdaafa658d4.jpg' },
+        { id: 9, name: 'Fresh Orange Juice', price: 8.00, category: 'Beverages', image: 'https://i0.wp.com/images-prod.healthline.com/hlcmsresource/images/AN_images/orange-juice-1296x728-feature.jpg?w=1155&h=1528' },
+        { id: 10, name: 'Grilled Chicken Salad', price: 22.00, category: 'Lunch', image: 'https://challengedairy.com/wp-content/uploads/recipe_zesty_ranch_chicken_salad_2280.jpg' },
+        { id: 11, name: 'Tiramisu', price: 16.00, category: 'Deserts', image: 'https://www.bunsenburnerbakery.com/wp-content/uploads/2016/06/easy-tiramisu-square-29-720x540.jpg' },
+        { id: 12, name: 'Iced Latte', price: 10.00, category: 'Beverages', image: 'https://www.coca-cola.com/content/dam/onexp/us/en/brands/simply/products/simply-hpg-product-category-img-orange.jpg' },
+      ],
+      orderItems: []
+    }
+  },
 
-// High-quality real food images from web search (ready for backend replacement)
-const products = ref([
-  { id: 1, name: 'Schezwan Egg Noodles', price: 24.00, category: 'Lunch', image: 'https://www.cookwithmanali.com/wp-content/uploads/2021/08/Schezwan-Noodles-500x375.jpg' },
-  { id: 2, name: 'Stir Egg Fry Udon Noodles', price: 24.00, category: 'Lunch', image: 'https://eggs.ca/wp-content/uploads/2024/06/Kimchi-Udon-Stir-Fry-with-Fried-Eggs2-CMS.jpg' },
-  { id: 3, name: 'Thai Style Fried Noodles', price: 26.00, category: 'Lunch', image: 'https://d1w7312wesee68.cloudfront.net/1usnAkC5ZbalV8sAU577gWVhdYtiH05B3pkMf_9uI34/resize:fit:720:720/plain/s3://toasttab/restaurants/restaurant-253052000000000000/menu/images/item-8af8458e-fb30-4914-bde9-3cd7f2de4edd.jpg' },
-  { id: 4, name: 'Chinese Prawn Spaghetti', price: 32.00, category: 'Supper', image: 'https://images.notquitenigella.com/images/kung-pao-prawn-spaghetti/ll.jpg' },
-  { id: 5, name: 'Pancakes with Maple Syrup', price: 18.00, category: 'Breakfast', image: 'https://www.giallozafferano.com/images/260-26079/Pancakes-with-maple-syrup_1200x800.jpg' },
-  { id: 6, name: 'Avocado Toast', price: 15.00, category: 'Breakfast', image: 'https://popmenucloud.com/cdn-cgi/image/width%3D1200%2Cheight%3D1200%2Cfit%3Dscale-down%2Cformat%3Dauto%2Cquality%3D60/qegjhdml/266b99bc-c80b-4e55-8eeb-a1891793a5f0.jpg' },
-  { id: 7, name: 'Spring Rolls', price: 12.00, category: 'Starters', image: 'https://www.thespruceeats.com/thmb/LAD6HCmf0MFSpV3JDJgM9n7REos=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/SES-thai-fresh-rolls-with-vegetarian-option-3217706-hero-A-3bdb04a8ee2444a2ab6873810a334642.jpg' },
-  { id: 8, name: 'Chocolate Lava Cake', price: 14.00, category: 'Deserts', image: 'https://www.allrecipes.com/thmb/J0D_WQYOGJs3PpuDqqconBr0efI=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/7272577-67dd531d7b4a48dbb254dcdaafa658d4.jpg' },
-  { id: 9, name: 'Fresh Orange Juice', price: 8.00, category: 'Beverages', image: 'https://i0.wp.com/images-prod.healthline.com/hlcmsresource/images/AN_images/orange-juice-1296x728-feature.jpg?w=1155&h=1528' },
-  { id: 10, name: 'Grilled Chicken Salad', price: 22.00, category: 'Lunch', image: 'https://challengedairy.com/wp-content/uploads/recipe_zesty_ranch_chicken_salad_2280.jpg' },
-  { id: 11, name: 'Tiramisu', price: 16.00, category: 'Deserts', image: 'https://www.bunsenburnerbakery.com/wp-content/uploads/2016/06/easy-tiramisu-square-29-720x540.jpg' },
-  { id: 12, name: 'Iced Latte', price: 10.00, category: 'Beverages', image: 'https://www.coca-cola.com/content/dam/onexp/us/en/brands/simply/products/simply-hpg-product-category-img-orange.jpg' }, // fallback similar
-])
+  computed: {
+    // ...mapState({
 
-const filteredProducts = computed(() => products.value.filter(p => p.category === activeTab.value))
+    // }),
+    filteredProducts() {
+      return this.products.filter(p => p.category === this.activeTab)
+    },
 
-const orderItems = ref([])
+    subtotal() {
+      return this.orderItems.reduce((acc, item) => acc + (item.price * item.qty), 0)
+    },
 
-function addToOrder(product) {
-  const existing = orderItems.value.find(i => i.id === product.id)
-  if (existing) {
-    existing.qty += 1
-  } else {
-    orderItems.value.push({ ...product, qty: 1 })
+    tax() {
+      return this.subtotal * 0.15
+    },
+
+    payableAmount() {
+      return this.subtotal + this.tax
+    }
+  },
+
+  methods: {
+    addToOrder(product) {
+      const existing = this.orderItems.find(i => i.id === product.id)
+      if (existing) {
+        existing.qty += 1
+      } else {
+        this.orderItems.push({ ...product, qty: 1 })
+      }
+    },
+
+    removeItem(itemToRemove) {
+      this.orderItems = this.orderItems.filter(i => i.id !== itemToRemove.id)
+    },
+
+    openImagePopup(imageUrl) {
+      this.popupImage = imageUrl
+    },
+
+    proceedPayment() {
+      alert('Proceeding to payment gateway...')
+    },
   }
 }
-
-function removeItem(itemToRemove) {
-  orderItems.value = orderItems.value.filter(i => i.id !== itemToRemove.id)
-}
-
-function openImagePopup(imageUrl) {
-  popupImage.value = imageUrl
-}
-
-const subtotal = computed(() => orderItems.value.reduce((acc, item) => acc + (item.price * item.qty), 0))
-const tax = computed(() => subtotal.value * 0.15)
-const payableAmount = computed(() => subtotal.value + tax.value)
 </script>
 
 <style scoped>
