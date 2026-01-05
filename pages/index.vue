@@ -85,7 +85,7 @@
 
           <!-- Hold Orders Notification Icon -->
           <div 
-          class="relative cursor-pointer" 
+          class="relative cursor-pointer px-2" 
           @click="showHoldOrders = true" 
           >
             <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -99,18 +99,18 @@
             </span>
           </div>
 
-          <button class="bg-orange-500 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-orange-600">
+          <!-- <button class="bg-orange-500 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-orange-600">
             + Add Customer
-          </button>
+          </button> -->
         </div>
 
         <!-- Desktop Header -->
         <div class="hidden lg:flex p-4 border-b bg-gradient-to-r from-orange-50 to-orange-100 justify-between items-center">
-          <h2 class="text-xl font-bold text-gray-800">Order</h2>
+          <h2 class="text-xl font-bold text-gray-800">Current Order</h2>
 
         <!-- Hold Orders Notification Icon -->
         <div 
-          class="relative cursor-pointer" 
+          class="relative cursor-pointer px-2" 
           @click="showHoldOrders = true" 
         >
           <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -124,9 +124,9 @@
           </span>
         </div>
 
-          <button class="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600">
+          <!-- <button class="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600">
             + Add Customer
-          </button>
+          </button> -->
         </div>
 
         <!-- Order Items List -->

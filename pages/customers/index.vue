@@ -41,7 +41,7 @@
 
             <!-- Add Customer -->
             <button
-              @click="openAddCustomerModal"
+              @click="addCustomers"
               class="bg-orange-500 text-white px-6 py-2 rounded-lg font-medium
                      hover:bg-orange-600 transition shadow-md flex items-center gap-2"
             >
@@ -203,6 +203,24 @@ export default {
           orderCount: 5,
         },
         {
+          id: 1,
+          name: 'James Smith',
+          phone: '0771234567',
+          lastVisit: 'Dec 28, 2025',
+          totalSpent: 2450.50,
+          points: 120,
+          orderCount: 8
+        },
+        {
+          id: 2,
+          name: 'Mishura Fernando',
+          phone: '0719876543',
+          lastVisit: 'Dec 29, 2025',
+          totalSpent: 1897.75,
+          points: 95,
+          orderCount: 5,
+        },
+        {
           id: 1001,
           name: 'Anuradha Perera',
           phone: '0998833445',
@@ -236,8 +254,8 @@ export default {
   },
 
   methods: {
-    openAddCustomerModal() {
-      alert('Add Customer modal coming next 😉')
+    addCustomers() {
+      this.$router.push(`/customers/add`)
     },
 
     viewCustomerDetails(customer) {
