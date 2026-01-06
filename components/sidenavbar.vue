@@ -1,17 +1,22 @@
 <template>
   <div
-    :class="sidebarOpen ? 'w-54' : 'w-20'"
-    class="bg-gray-100 text-gray-700 flex flex-col transition-all duration-300 ease-in-out overflow-hidden"
+    :class="sidebarOpen ? 'w-56' : 'w-20'"
+    class="bg-gradient-to-b from-gray-900 to-gray-800 text-gray-100 flex flex-col transition-all duration-300 ease-in-out overflow-hidden shadow-lg"
   >
-    <!-- Logo / Title Area -->
-    <div class="py-6 px-4 flex items-center justify-between border-b border-gray-200">
-      <!-- <h2 v-show="sidebarOpen" class="text-xl font-bold text-orange-500">POS</h2> -->
+    <!-- Logo / Toggle Button -->
+    <div class="py-6 px-4 flex items-center justify-between border-b border-gray-700">
+      <!-- Logo / Title -->
+      <h2 v-show="sidebarOpen" class="text-xl font-bold text-orange-400">
+       
+      </h2>
+
+      <!-- Toggle Button -->
       <button
         @click="$emit('toggle')"
-        class="p-2 rounded ml-auto mr-auto
-              text-gray-600 hover:bg-gray-200
-              transition-all duration-300 ease-in-out
-              transform hover:scale-105 active:scale-95"
+        class="p-2 rounded ml-auto mr-auto 
+               text-gray-200 hover:bg-gray-600
+               transition-all duration-300 ease-in-out
+               transform hover:scale-110 active:scale-95"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -30,29 +35,37 @@
           />
         </svg>
       </button>
-
     </div>
 
     <!-- Menu Items -->
-    <ul class="flex-1 py-8 space-y-4 px-4">
-    <li v-for="item in menuItems" :key="item.name" class="group">
-      <nuxt-link
-        :to="item.path"
-        class="p-3 rounded-lg transition flex items-center space-x-3"
-        :class="[
-          $route.path === item.path
-            ? 'bg-orange-500 text-white'
-            : 'text-gray-600 hover:bg-gray-200 group-hover:text-gray-800'
-        ]"
-      >
-        <span class="text-2xl">{{ item.icon }}</span>
-        <span v-show="sidebarOpen" class="text-sm font-medium">
-          {{ item.name }}
-        </span>
-      </nuxt-link>
-    </li>
-  </ul>
+    <ul class="flex-1 py-6 my-3 space-y-2 px-2">
+      <li v-for="item in menuItems" :key="item.name" class="group">
+        <nuxt-link
+          :to="item.path"
+          class="flex items-center space-x-4 p-3 rounded-lg transition duration-300"
+          :class="[
+            $route.path === item.path
+              ? 'bg-orange-500 text-white shadow-lg'
+              : 'text-gray-300 hover:bg-gray-700 hover:text-white'
+          ]"
+        >
+          <!-- Icon -->
+          <span class="text-2xl flex-shrink-0 transition-transform duration-300 group-hover:scale-110">
+            {{ item.icon }}
+          </span>
 
+          <!-- Label -->
+          <span v-show="sidebarOpen" class="text-sm font-medium transition-opacity duration-300">
+            {{ item.name }}
+          </span>
+        </nuxt-link>
+      </li>
+    </ul>
+
+    <!-- Footer / Optional -->
+    <div class="py-4 px-4 border-t border-gray-700 text-center text-gray-400 text-xs">
+      © 2026 Restaurant POS
+    </div>
   </div>
 </template>
 
@@ -69,9 +82,9 @@ export default {
     return {
       menuItems: [
         { name: 'Home', icon: '🏠', path: '/' },
-        { name: 'Cashier', icon: '💵',  path: '/cashier' },
+        { name: 'Cashier', icon: '💵', path: '/cashier' },
         { name: 'Orders', icon: '🧾', path: '/orders' },
-        { name: 'Tables', icon: '🪑', path: '/tables' },
+        { name: 'Tables', icon: '🍽️', path: '/tables' },
         { name: 'Customers', icon: '👥', path: '/customers' },
         { name: 'Reports', icon: '📊', path: '/reports' },
         { name: 'Settings', icon: '⚙️', path: '/settings' }
@@ -81,14 +94,15 @@ export default {
 }
 </script>
 
+<style scoped>
+/* Smooth icon hover */
+.group:hover span {
+  transition: transform 0.3s;
+  transform: scale(1.15);
+}
 
-
-
-
-
-
-
-
-
-
-
+/* Optional: make label fade smoothly when sidebar collapses */
+span {
+  transition: opacity 0.3s, transform 0.3s;
+}
+</style>
