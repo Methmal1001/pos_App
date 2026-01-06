@@ -69,10 +69,10 @@ export default {
     return {
       menuItems: [
         { name: 'Home', icon: '🏠', path: '/' },
-        { name: 'Customers', icon: '👥', path: '/customers' },
-        { name: 'Tables', icon: '🪑', path: '/tables' },
-        { name: 'Orders', icon: '🧾', path: '/orders' },
         { name: 'Cashier', icon: '💵',  path: '/cashier' },
+        { name: 'Orders', icon: '🧾', path: '/orders' },
+        { name: 'Tables', icon: '🪑', path: '/tables' },
+        { name: 'Customers', icon: '👥', path: '/customers' },
         { name: 'Reports', icon: '📊', path: '/reports' },
         { name: 'Settings', icon: '⚙️', path: '/settings' }
       ]
