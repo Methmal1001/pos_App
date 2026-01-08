@@ -1,58 +1,96 @@
 <template>
   <!-- Overlay -->
   <div class="fixed inset-0 bg-black bg-opacity-50 z-40 flex items-center justify-center">
-    
     <!-- Modal -->
-    <div class="bg-white rounded-xl shadow-2xl w-full max-w-lg mx-4 p-6 overflow-auto relative z-50">
-      
+    <div
+      class="bg-white rounded-xl shadow-2xl w-full max-w-md mx-4 p-6 relative z-50"
+    >
       <!-- Close Button -->
       <button
         @click="$emit('close')"
-        class="absolute top-4 right-4 text-red-500 font-bold text-2xl hover:text-red-700 transition"
+        class="absolute top-3 right-4 text-red-500 font-bold text-2xl hover:text-red-700 transition"
       >
         ✕
       </button>
 
       <!-- Title -->
-      <h2 class="text-2xl font-bold mb-6 text-center text-gray-800">Payment Details</h2>
+      <h2 class="text-xl font-bold mb-4 text-center text-gray-800">
+        Restaurant Bill
+      </h2>
 
-      <!-- Order Items List -->
-      <div class="divide-y divide-gray-200">
-        <div 
-          v-for="item in orderItems" 
-          :key="item.id" 
-          class="flex justify-between items-center py-3"
+      <!-- Restaurant Info -->
+      <div class="text-center text-sm text-gray-500 mb-4">
+        <p class="font-semibold text-gray-700">ABC Restaurant</p>
+        <p>Main Street, City</p>
+        <p>Tel: 011-2345678</p>
+      </div>
+
+      <hr class="border-dashed mb-4" />
+
+      <!-- Customer Contact -->
+      <div class="flex items-center justify-between mb-4">
+        <span class="font-semibold text-gray-700">Customer Tel</span>
+        <input
+          v-model="contactNumber"
+          type="text"
+          placeholder="07XXXXXXXX"
+          class="border border-orange-400 rounded px-2 py-1 w-36 text-sm focus:outline-none focus:ring-1 focus:ring-orange-400"
+        />
+      </div>
+
+      <!-- Items -->
+      <div class="divide-y divide-gray-200 max-h-60 overflow-y-auto text-sm">
+        <div
+          v-for="item in orderItems"
+          :key="item.id"
+          class="flex justify-between py-2"
         >
-          <div class="text-gray-700 font-medium">
+          <div class="flex-1 text-gray-700">
             {{ item.qty }} × {{ item.name }}
           </div>
-          <div class="text-gray-900 font-semibold">
-            Rs. {{ (item.qty * item.price).toFixed(2) }}
+          <div class="font-semibold text-gray-800">
+            Rs {{ (item.qty * item.price).toFixed(2) }}
           </div>
         </div>
       </div>
 
+      <hr class="border-dashed my-4" />
+
       <!-- Total -->
-      <div class="mt-6 flex justify-between items-center text-lg font-bold text-gray-800 border-t pt-4">
+      <div class="flex justify-between text-base font-bold text-gray-800">
         <span>Total</span>
-        <span>Rs. {{ orderItems.reduce((acc, i) => acc + i.qty*i.price, 0).toFixed(2) }}</span>
+        <span>Rs {{ totalAmount.toFixed(2) }}</span>
       </div>
+
+      <!-- Payment Method -->
+      <div class="flex justify-between items-center mt-3 text-sm">
+        <span class="font-semibold text-gray-700">Payment</span>
+        <span
+          class="px-3 py-1 rounded-full bg-yellow-400 font-bold uppercase text-gray-900"
+        >
+          {{ paymentMethod }}
+        </span>
+      </div>
+
+      <!-- Footer -->
+      <p class="text-center text-xs text-gray-500 mt-5">
+        Thank you! Please visit again 😊
+      </p>
 
       <!-- Action Buttons -->
       <div class="mt-6 flex gap-3">
         <button
           @click="$emit('close')"
-          class="flex-1 py-3 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition font-medium"
+          class="flex-1 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition font-medium"
         >
-          Cancel
+          Close
         </button>
         <button
-          class="flex-1 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition font-medium"
+          class="flex-1 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition font-medium"
         >
-          Proceed to Pay
+          Confirm Payment
         </button>
       </div>
-
     </div>
   </div>
 </template>
@@ -63,13 +101,37 @@ export default {
     orderItems: {
       type: Array,
       required: true
+    },
+    paymentMethod: {
+      type: String,
+      required: true
+    }
+  },
+
+  data() {
+    return {
+      contactNumber: ''
+    }
+  },
+
+  computed: {
+    totalAmount() {
+      return this.orderItems.reduce(
+        (total, item) => total + item.qty * item.price,
+        0
+      )
     }
   }
 }
 </script>
 
-<style>
-div[overflow-auto] {
-  -webkit-overflow-scrolling: touch;
+<style scoped>
+/* Smooth scroll inside bill */
+::-webkit-scrollbar {
+  width: 4px;
+}
+::-webkit-scrollbar-thumb {
+  background: #d1d5db;
+  border-radius: 4px;
 }
 </style>

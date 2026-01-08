@@ -158,64 +158,47 @@
             </div>
           </div>
 
-          <!-- Payment Summary & Method Selection -->
-          <div class="border-t p-4 bg-gray-50 shrink-0 space-y-6">
-
-          <!-- Summary Card -->
-          <div class="bg-white rounded-xl shadow-sm p-4 space-y-3">
-            <div class="flex justify-between text-gray-600">
-              <span class="font-medium">Subtotal</span>
-              <span class="font-semibold border px-2 py-1 rounded border-gray-300 bg-gray-100">Rs {{ subtotal.toFixed(2) }}</span>
-            </div>
-
-            <div class="flex justify-between text-gray-600 text-sm">
-              <span class="font-medium">Tax (15%)</span>
-              <span>Rs {{ tax.toFixed(2) }}</span>
-            </div>
-
-            <div class="flex justify-between items-center border-t pt-3">
-              <span class="text-lg font-bold text-gray-800">Total</span>
-              <span class="text-lg font-bold text-white bg-orange-500 px-3 py-1 rounded-lg shadow-md">Rs {{ payableAmount.toFixed(2) }}</span>
-            </div>
-          </div>
-
           <!-- Payment Method Selection -->
-          <div class="flex gap-4 justify-center">
+          <div class="flex gap-4 justify-center py-4">
             <!-- Cash -->
             <button
-              class="flex flex-col items-center p-4 bg-white rounded-xl shadow-md hover:shadow-xl transition transform hover:-translate-y-1 focus:ring-2 focus:ring-green-500"
+              @click="selectPaymentMethod('cash')"
+              :class="selectedPaymentMethod === 'cash' ? 'ring-2 ring-green-500 bg-green-50' : ''"
+              class="flex flex-col items-center p-4 bg-white rounded-xl shadow-md hover:shadow-xl transition"
             >
-              <svg class="w-8 h-8 text-green-500 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg class="w-8 h-8 text-green-600 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                   d="M17 9V7a5 5 0 00-10 0v2H5a2 2 0 00-2 2v6a2 2 0 002 2h14a2 2 0 002-2v-6a2 2 0 00-2-2h-2z"/>
               </svg>
-              <span class="text-sm font-medium text-gray-700">Cash</span>
+              <span class="text-sm font-medium">Cash</span>
             </button>
 
             <!-- Card -->
             <button
-              class="flex flex-col items-center p-4 bg-white rounded-xl shadow-md hover:shadow-xl transition transform hover:-translate-y-1 focus:ring-2 focus:ring-blue-500"
+              @click="selectPaymentMethod('card')"
+              :class="selectedPaymentMethod === 'card' ? 'ring-2 ring-green-500 bg-green-50' : ''"
+              class="flex flex-col items-center p-4 bg-white rounded-xl shadow-md hover:shadow-xl transition"
             >
-              <svg class="w-8 h-8 text-blue-500 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg class="w-8 h-8 text-blue-600 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                   d="M3 7h18M3 11h18M5 15h4"/>
               </svg>
-              <span class="text-sm font-medium text-gray-700">Card</span>
+              <span class="text-sm font-medium">Card</span>
             </button>
 
             <!-- Credit -->
             <button
-              class="flex flex-col items-center p-4 bg-white rounded-xl shadow-md hover:shadow-xl transition transform hover:-translate-y-1 focus:ring-2 focus:ring-purple-500"
+              @click="selectPaymentMethod('credit')"
+              :class="selectedPaymentMethod === 'credit' ? 'ring-2 ring-green-500 bg-green-50' : ''"
+              class="flex flex-col items-center p-4 bg-white rounded-xl shadow-md hover:shadow-xl transition"
             >
-              <svg class="w-8 h-8 text-purple-500 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg class="w-8 h-8 text-purple-600 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                   d="M12 8c1.657 0 3-1.343 3-3S13.657 2 12 2 9 3.343 9 5s1.343 3 3 3zM5 22v-2a4 4 0 014-4h6a4 4 0 014 4v2H5z"/>
               </svg>
-              <span class="text-sm font-medium text-gray-700">Credit</span>
+              <span class="text-sm font-medium">Credit</span>
             </button>
           </div>
-
-        </div>
 
           <!-- Action Buttons (FIXED) -->
           <div class="border-t p-4 bg-white shrink-0">
@@ -248,6 +231,7 @@
           <payments
             v-if="showPayments"
             :order-items="orderItems"
+            :payment-method="selectedPaymentMethod"
             @close="closePayments"
           />
         </div>
@@ -308,6 +292,10 @@ export default {
       holdOrdersList: [],      // store held orders
       holdOrdersCount: 0,      // notification badge
       showHoldOrders: false,
+
+      // payment method selected
+      selectedPaymentMethod: null,
+      showPayments: false,
     }
   },
 
@@ -360,10 +348,23 @@ export default {
       this.popupImage = imageUrl
     },
 
-    proceedPayment() {
-      this.showPayments = true
-      document.body.style.overflow = 'hidden'
+    // proceedPayment() {
+    //   this.showPayments = true
+    //   document.body.style.overflow = 'hidden'
+    // },
+
+    selectPaymentMethod(method) {
+      this.selectedPaymentMethod = method
     },
+
+    proceedPayment() {
+      if (!this.selectedPaymentMethod) {
+        alert('Please select a payment method.')
+        return
+      }
+      this.showPayments = true
+    },
+
     closePayments() {
       this.showPayments = false
       document.body.style.overflow = 'auto'
@@ -415,6 +416,8 @@ export default {
         this.orderItems = []  // optionally clear current order
       }
     },
+
+
   }
 }
 </script>
